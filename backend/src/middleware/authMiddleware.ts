@@ -1,11 +1,12 @@
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
-dotenv.config()
+import { NextFunction, Request, Response } from "express"
+import { IPayload } from "../interfaces/IPayload"
 
-const JWT_SECRET = process.env.JWT_SECRET
-
-const authMiddleware = (req, res, next) => {
+const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const header = req.headers.authorization
+
+  const JWT_SECRET = process.env.JWT_SECRET
 
   if (!header) {
     return res.status(401).json({ success: false, error: "el token es requerido" })
@@ -27,21 +28,12 @@ const authMiddleware = (req, res, next) => {
   try {
     const payload = jwt.verify(token, JWT_SECRET)
 
-    //  {
-    //   _id: '697003f927908528b53a9348',
-    //   username: 'Nuevo usuario',      
-    //   email: 'mariano@gmail.com',
-    //   iat: 1770331484,
-    //   exp: 1770335084
-    // }
-
-    req.user = payload
-
-    console.log(payload, "payload del token")
+    req.user = payload as IPayload
 
     next()
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    const err = error as Error
+    res.status(500).json({ success: false, error: err.message })
   }
 }
 

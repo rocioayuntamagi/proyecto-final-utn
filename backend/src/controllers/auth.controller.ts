@@ -1,13 +1,18 @@
-import { User } from "../models/user.model.js"
+import { User } from "../models/user.model"
 import bcryptjs from "bcryptjs"
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
+import { Request, Response } from "express"
+import { IPayload } from "../interfaces/IPayload"
 dotenv.config()
 
 const JWT_SECRET = process.env.JWT_SECRET
-const JWT_EXPIRES = process.env.JWT_EXPIRES
 
-const register = async (req, res) => {
+if (!JWT_SECRET) {
+  throw new Error("Debes ingresar credenciales para jwt")
+}
+
+const register = async (req: Request, res: Response) => {
   try {
     const body = req.body
 
@@ -25,6 +30,12 @@ const register = async (req, res) => {
 
     if (password.length < 4) {
       return res.status(400).json({ success: false, error: "la contraseña debe contar al menos con 5 caracteres" })
+    }
+
+    const foundUser = await User.find({ email })
+
+    if (foundUser) {
+      return res.status(400).json({ success: false, error: "Email ya existente en nuestra base de datos" })
     }
 
     const hash = await bcryptjs.hash(password, 10)
@@ -45,14 +56,12 @@ const register = async (req, res) => {
       }
     })
   } catch (error) {
-    if (error.code === 11000) {
-      return res.status(400).json({ success: false, error: "Email ya existente en nuestra base de datos" })
-    }
-    res.status(500).json({ success: false, error: error.message })
+    const err = error as Error
+    res.status(500).json({ success: false, error: err.message })
   }
 }
 
-const login = async (req, res) => {
+const login = async (req: Request, res: Response) => {
   try {
     const body = req.body
     const { email, password } = body
@@ -77,13 +86,14 @@ const login = async (req, res) => {
     // generar un token (cupón especial)
     // Un token es una llave digital o un fragmento de información que sirve para autenticar y autorizar a un usuario en sistemas digitales
 
-    const payload = { _id: foundUser._id, username: foundUser.username, email: foundUser.email }
+    const payload: IPayload = { _id: foundUser._id, username: foundUser.username, email: foundUser.email }
 
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES })
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" })
 
     res.json({ success: true, data: token })
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message })
+    const err = error as Error
+    res.status(500).json({ success: false, error: err.message })
   }
 }
 

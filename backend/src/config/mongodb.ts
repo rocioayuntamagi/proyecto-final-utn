@@ -4,6 +4,10 @@ dotenv.config()
 
 const URI_DB = process.env.URI_DB
 
+if (!URI_DB) {
+  throw new Error("Debes ingresar una URI valida.")
+}
+
 const connectDb = async () => {
   try {
     await connect(URI_DB)
