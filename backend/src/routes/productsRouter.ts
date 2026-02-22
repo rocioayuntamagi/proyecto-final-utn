@@ -1,13 +1,25 @@
 import { Router } from "express"
 import { createProduct, deleteProduct, getProducts, updateProduct } from "../controllers/product.controller"
 
+import { authMiddleware } from "../middleware/authMiddleware"
+import { validateSchema } from "../middleware/validateSchema"
+import { productValidate, productPartialValidate } from "../schemas/product.shema"
+
 const productRouter = Router()
 
-// GET - http://localhost:50000/products/
+// Todas las rutas de productos requieren autenticación
+productRouter.use(authMiddleware)
+
 
 productRouter.get("/", getProducts)
-productRouter.post("/", createProduct)
-productRouter.patch("/:id", updateProduct)
+
+
+productRouter.post("/", validateSchema(productValidate), createProduct)
+
+
+productRouter.patch("/:id", validateSchema(productPartialValidate), updateProduct)
+
+
 productRouter.delete("/:id", deleteProduct)
 
 export { productRouter }
