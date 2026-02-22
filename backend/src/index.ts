@@ -6,6 +6,7 @@ import { authRouter } from "./routes/authRouter"
 import { authMiddleware } from "./middleware/authMiddleware"
 import { IPayload } from "./interfaces/IPayload"
 import dotenv from "dotenv"
+import { errorHandler } from "./middleware/errorHandler"
 
 dotenv.config()
 
@@ -47,3 +48,5 @@ serverHttp.listen(PORT, () => {
     process.exit(1)
   }
 })
+
+serverHttp.use(errorHandler)
