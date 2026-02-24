@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { createProduct, deleteProduct, getProducts, updateProduct } from "../controllers/product.controller"
+import { createProduct, deleteProduct, getProducts, updateProduct, getProductById} from "../controllers/product.controller"
 import { authMiddleware } from "../middleware/authMiddleware"
 import { validateSchema } from "../middleware/validateSchema"
 import { productValidate, productPartialValidate } from "../schemas/product.schema"
@@ -13,6 +13,9 @@ productRouter.use(authMiddleware)
 productRouter.get("/", getProducts)
 
 
+productRouter.get("/:id", getProductById)
+
+
 productRouter.post("/", validateSchema(productValidate), createProduct)
 
 
@@ -20,5 +23,7 @@ productRouter.patch("/:id", validateSchema(productPartialValidate), updateProduc
 
 
 productRouter.delete("/:id", deleteProduct)
+
+
 
 export { productRouter }

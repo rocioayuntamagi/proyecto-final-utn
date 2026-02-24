@@ -3,17 +3,15 @@ import { ZodTypeAny } from "zod"
 
 export const validateSchema = (schema: ZodTypeAny) =>
   (req: Request, res: Response, next: NextFunction) => {
+
     try {
-      schema.parse({
-        body: req.body,
-        query: req.query,
-        params: req.params
-      })
+      schema.parse(req.body)   
       next()
-    } catch (error) {
+    } catch (error: any) {
+
       return res.status(400).json({
         success: false,
-        error: error.errors.map((e: any) => e.message)
+        error: error.errors?.map((e: any) => e.message) || ["Datos inválidos"]
       })
     }
   }

@@ -1,0 +1,30 @@
+info:
+  name: Create Product
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:50000/products
+  headers:
+    - name: Content-Type
+      value: application/json
+    - name: Authorization
+      value: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTliOWIzMTY2Yzg5ZTcxMzhmMGM5NGUiLCJ1c2VybmFtZSI6IlJvY2lvIiwiZW1haWwiOiJ0ZXN0MkB0ZXN0LmNvbSIsImlhdCI6MTc3MTgxOTA5OSwiZXhwIjoxNzcxODIyNjk5fQ.UNx5E7qhBoXAvGMpXOCBO3TG9Gu7_v6KRJoNC08I4y8
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Producto nuevo",
+        "price": 1500,
+        "stock": 10,
+        "description": "Descripción de prueba",
+        "category": "tecnologia"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

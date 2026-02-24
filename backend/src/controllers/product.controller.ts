@@ -39,6 +39,36 @@ export const getProducts = async (req: Request, res: Response) => {
   }
 }
 
+export const getProductById = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id as string
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        error: "ID incorrecto, ingresa un valor válido"
+      })
+    }
+
+    const product = await Product.findOne({
+      _id: id,
+      user: req.user._id
+    })
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: "No existe el producto"
+      })
+    }
+
+    return res.json({ success: true, data: product })
+  } catch (error) {
+    const err = error as Error
+    return res.status(500).json({ success: false, error: err.message })
+  }
+}
+
 export const createProduct = async (req: Request, res: Response) => {
   try {
     const body = req.body

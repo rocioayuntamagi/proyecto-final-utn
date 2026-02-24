@@ -22,7 +22,12 @@ declare global {
 }
 
 // middleware
-serverHttp.use(cors())
+serverHttp.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}))
+
 serverHttp.use(express.json())
 
 // http://localhost:50000/products
@@ -35,6 +40,7 @@ serverHttp.use((req, res) => {
   res.status(404).json({ success: false, error: "el recurso no se encuentra" })
 })
 
+serverHttp.use(errorHandler)
 const PORT = process.env.PORT
 
 // 0 - 65656
@@ -49,4 +55,3 @@ serverHttp.listen(PORT, () => {
   }
 })
 
-serverHttp.use(errorHandler)

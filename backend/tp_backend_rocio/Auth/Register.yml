@@ -1,0 +1,23 @@
+info:
+  name: Register
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:50000/auth/register
+  body:
+    type: json
+    data: |-
+      {
+        "email": "test2@test.com",
+        "password": "123456",
+        "username": "Rocio"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
