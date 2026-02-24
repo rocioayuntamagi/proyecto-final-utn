@@ -3,6 +3,8 @@ import { createProduct, deleteProduct, getProducts, updateProduct, getProductByI
 import { authMiddleware } from "../middleware/authMiddleware"
 import { validateSchema } from "../middleware/validateSchema"
 import { productValidate, productPartialValidate } from "../schemas/product.schema"
+import { productQuerySchema } from "../schemas/productQuery.schema"
+import { validateQuery } from "../middleware/validateSchema"
 
 const productRouter = Router()
 
@@ -10,7 +12,7 @@ const productRouter = Router()
 productRouter.use(authMiddleware)
 
 
-productRouter.get("/", getProducts)
+productRouter.get("/", validateQuery(productQuerySchema), getProducts)
 
 
 productRouter.get("/:id", getProductById)
