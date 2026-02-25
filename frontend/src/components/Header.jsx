@@ -13,16 +13,16 @@ const Header = () => {
 
   return (
     <header className="home-header">
-      <h1>Welcome to Our Store</h1>
+      <h1>Bienvenido a Nuestra Tienda</h1>
       <nav>
         <ul>
           {token && (
-            <li className="user-label">Hola, {typeof user === 'object' && user !== null ? (user.name || user.email || "Usuario") : (user || "Usuario")}</li>
+            <li className="user-label">Hola, {user && typeof user === 'object' && (user.username || user.name || user.email) ? (user.username || user.name || user.email) : (user || "Usuario")}</li>
           )}
-          <li><Link to="/about">About Us</Link></li>
+          <li><Link to="/about">Sobre Nosotros</Link></li>
           {token && (
             <>
-              <li><Link to="/catalog">Catalog</Link></li>
+              <li><Link to="/catalog">Catálogo</Link></li>
               <li>
                 <button className="logout-btn" onClick={handleLogout}>
                   Cerrar sesión
@@ -31,7 +31,7 @@ const Header = () => {
             </>
           )}
           {!token && (
-            <li><Link to="/login">Login</Link></li>
+            <li><Link to="/login">Iniciar sesión</Link></li>
           )}
         </ul>
       </nav>

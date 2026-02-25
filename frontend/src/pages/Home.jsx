@@ -179,17 +179,17 @@ const applyPage = (page) => {
 
     {/* Banner */}
     <section className="home-banner">
-      <h2>Discover Our Exclusive Products</h2>
-      <p>High quality, affordable prices, and fast delivery.</p>
+      <h2>Descubre Nuestros Productos Exclusivos</h2>
+      <p>Alta calidad, precios accesibles y entrega rápida.</p>
       <h2>Usuario logueado: {user}</h2>
     </section>
 
-    {/* Product Catalog */}
+    {/* Catálogo de Productos */}
     <main id="catalog">
       <div className="catalog-header">
-        <h1>Product Catalog</h1>
+        <h1>Catálogo de Productos</h1>
         <button className="btn-add-product" onClick={handleToggleForm}>
-          + Add New Product
+          + Agregar Nuevo Producto
         </button>
       </div>
 
@@ -214,26 +214,26 @@ const applyPage = (page) => {
   </button>
 </div>
 
-      {/* Product Form */}
+      {/* Formulario de Producto */}
       {showForm && (
         <div className="form-overlay">
           <div className="product-form">
-            <h2>{editingProduct ? 'Edit Product' : 'Add New Product'}</h2>
+            <h2>{editingProduct ? 'Editar Producto' : 'Agregar Nuevo Producto'}</h2>
             <form onSubmit={handleSubmit}>
 
               <div className="form-group">
-                <label>Name</label>
+                <label>Nombre</label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="Product name"
+                  placeholder="Nombre del producto"
                 />
               </div>
 
               <div className="form-group">
-                <label>Price</label>
+                <label>Precio</label>
                 <input
                   type="number"
                   name="price"
@@ -258,33 +258,33 @@ const applyPage = (page) => {
               </div>
 
               <div className="form-group">
-                <label>Description</label>
+                <label>Descripción</label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
                   rows="4"
-                  placeholder="Product description"
+                  placeholder="Descripción del producto"
                 />
               </div>
 
               <div className="form-group">
-                <label>Category</label>
+                <label>Categoría</label>
                 <input
                   type="text"
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  placeholder="Electronics, Clothing, etc."
+                  placeholder="Electrónica, Ropa, etc."
                 />
               </div>
 
               <div className="form-actions">
                 <button type="submit" className="btn-submit">
-                  {editingProduct ? 'Update Product' : 'Create Product'}
+                  {editingProduct ? 'Actualizar Producto' : 'Crear Producto'}
                 </button>
                 <button type="button" className="btn-cancel" onClick={handleToggleForm}>
-                  Cancel
+                  Cancelar
                 </button>
               </div>
 
@@ -293,7 +293,7 @@ const applyPage = (page) => {
         </div>
       )}
 
-      {/* Product List */}
+      {/* Lista de Productos */}
       <div className="product-list">
         {products.length === 0 && (
           <p className="no-products">No hay productos disponibles.</p>
@@ -304,22 +304,22 @@ const applyPage = (page) => {
             <h2>{product.name}</h2>
             <p className="product-price">${product.price}</p>
             <p><strong>Stock:</strong> {product.stock}</p>
-            <p><strong>Description:</strong> {product.description}</p>
+            <p><strong>Descripción:</strong> {product.description}</p>
             <p className="product-category">{product.category}</p>
 
             <div className="product-actions">
               <button className="btn-edit" onClick={() => handleEdit(product)}>
-                ✏️ Edit
+                ✏️ Editar
               </button>
               <button className="btn-delete" onClick={() => handleDelete(product._id)}>
-                🗑️ Delete
+                🗑️ Eliminar
               </button>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Pagination */}
+      {/* Paginación */}
       {pagination && (
         <div className="pagination">
           <button
@@ -342,9 +342,9 @@ const applyPage = (page) => {
 
     </main>
 
-    {/* Footer */}
+    {/* Pie de página */}
     <footer className="home-footer">
-      <p>&copy; 2026 Our Store. All rights reserved.</p>
+      <p>&copy; 2026 Nuestra Tienda. Todos los derechos reservados.</p>
     </footer>
   </div>
 );}

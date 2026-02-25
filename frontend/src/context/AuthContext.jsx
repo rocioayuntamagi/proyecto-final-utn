@@ -34,7 +34,16 @@ const AuthProvider = ({ children }) => {
       setToken(json.data)
 
       // Si el backend devuelve usuario, guardarlo
-      if (json.user) setUser(json.user)
+      if (json.user) {
+        setUser(json.user)
+      } else if (json.username || json.name || json.email) {
+        // Si el backend devuelve los datos del usuario plano
+        setUser({
+          username: json.username,
+          name: json.name,
+          email: json.email
+        })
+      }
 
       return true
 
@@ -55,6 +64,15 @@ const AuthProvider = ({ children }) => {
         body: JSON.stringify(userData)
       })
 
+      // Si el registro fue exitoso y el backend devuelve el usuario, guardarlo
+      if (res.ok) {
+        try {
+          const json = await res.json();
+          if (json.user) setUser(json.user);
+        } catch (e) {
+          // Si no hay json o user, no hacer nada
+        }
+      }
       return res
     } catch (error) {
       console.error("Error en register:", error)

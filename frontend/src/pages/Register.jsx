@@ -18,7 +18,7 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const navigate = useNavigate();
-  const { authContextRegister } = useAuth()
+  const { authContextRegister, authContextLogin } = useAuth()
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,6 +73,10 @@ const Register = () => {
         showCancelButton: false,
         btnConfirm: 'Cerrar'
       });
+      if (res.ok) {
+        // Login automático tras registro exitoso
+        await authContextLogin({ email: formData.email, password: formData.password });
+      }
       setFormData({
         username: '',
         email: '',
