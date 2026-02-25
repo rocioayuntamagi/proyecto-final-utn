@@ -1,18 +1,20 @@
 const BASE_API = "http://localhost:50000/products"
 
-const getProducts = async (token) => {
-  const res = await fetch(`${BASE_API}`, {
+// GET ALL
+const getProducts = async (token, query = "") => {
+  const res = await fetch(`${BASE_API}${query}`, {
     method: "GET",
     headers: {
       Authorization: "Bearer " + token
     }
   })
 
-  return res
+  return res.json()
 }
 
+// CREATE
 const createProduct = async (productData, token) => {
-  const res = await fetch(`${BASE_API}`, {
+  const res = await fetch(BASE_API, {
     method: "POST",
     headers: {
       Authorization: "Bearer " + token,
@@ -21,9 +23,10 @@ const createProduct = async (productData, token) => {
     body: JSON.stringify(productData)
   })
 
-  return res
+  return res.json()
 }
 
+// UPDATE
 const updateProduct = async (editingProduct, updates, token) => {
   const res = await fetch(`${BASE_API}/${editingProduct._id}`, {
     method: "PATCH",
@@ -34,9 +37,10 @@ const updateProduct = async (editingProduct, updates, token) => {
     body: JSON.stringify(updates)
   })
 
-  return res
+  return res.json()
 }
 
+// DELETE
 const deleteProduct = async (id, token) => {
   const res = await fetch(`${BASE_API}/${id}`, {
     method: "DELETE",
@@ -44,7 +48,8 @@ const deleteProduct = async (id, token) => {
       Authorization: "Bearer " + token
     }
   })
-  return res
+
+  return res.json()
 }
 
 export { getProducts, createProduct, updateProduct, deleteProduct }

@@ -2,31 +2,40 @@ import { useEffect, useState } from 'react';
 import { Header } from '../components/Header';
 import '../styles/Home.css';
 import { generatePopup } from '../utils/popup';
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 import { createProduct, deleteProduct, getProducts, updateProduct } from '../services/api.js';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const Home = () => {
-  const [products, setProducts] = useState([])
-  const [showForm, setShowForm] = useState(false)
-  const [editingProduct, setEditingProduct] = useState(null)
-  const [formData, setFormData] = useState({
-    name: '',
-    price: '',
-    stock: '',
-    description: '',
-    category: ''
-  })
+  const [products, setProducts] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [pagination, setPagination] = useState(null);
+ const [formData, setFormData] = useState({
+  name: '',
+  price: '',
+  stock: '',
+  description: '',
+  category: ''
+})
 
-  const { user, token } = useAuth()
+const [filters, setFilters] = useState({
+  name: "",
+  category: "",
+  minPrice: "",
+  maxPrice: "",
+  sort: "",
+  limit: 10
+});
 
+  const { user, token } = useAuth();
+  const navigate = useNavigate();
 
-  const navigate = useNavigate()
-
-  const fetchingProducts = async () => {
+  // Obtener productos
+  const fetchingProducts = async (query = "?page=1") => {
     try {
-      const res = await getProducts(token)
-      const json = await res.json()
+      const json = await getProducts(token, query);
+
       if (!json.success) {
         const confirm = await generatePopup({
           textTitle: "Error al obtener los productos",
@@ -34,116 +43,161 @@ const Home = () => {
           icon: "error",
           showCancelButton: false,
           btnConfirm: "Cerrar"
-        })
+        });
+
         if (confirm.isConfirmed) {
-          navigate("/login")
+          navigate("/login");
         }
-        return
+        return;
       }
 
-      setProducts(json.data)
+      setProducts(json.data);
+      setPagination(json.pagination);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const handleToggleForm = () => {
-    setShowForm((prev) => prev === true ? false : true)
-  }
+    setShowForm(prev => !prev);
+  };
 
+  // Crear o actualizar producto
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    const { name } = formData
+    e.preventDefault();
+    const { name } = formData;
 
     if (!name) {
-      alert("🚧 El nombre del producto debe ser obligatorio")
-      return
+      alert("🚧 El nombre del producto debe ser obligatorio");
+      return;
     }
 
     if (!editingProduct) {
-      const res = await createProduct(formData)
-      const json = await res.json()
+      // CREAR PRODUCTO
+      const json = await createProduct(formData, token);
 
       if (!json.success) {
-        alert(json.error)
+        alert(json.error);
+        return;
       }
 
-      fetchingProducts()
-      setShowForm(false)
+      fetchingProducts();
+      setShowForm(false);
+
       await generatePopup({
         textTitle: "Producto agregado 🎉",
         textContent: `ID: ${json.data._id} ✅`,
         icon: "success",
         showCancelButton: false,
         btnConfirm: "OK",
-      })
-      setFormData({
-        name: '',
-        price: '',
-        stock: '',
-        description: '',
-        category: ''
-      })
-    } else {
-      const res = await updateProduct(editingProduct, formData)
-      const json = await res.json()
+      });
 
-      fetchingProducts()
-      setFormData({
-        name: '',
-        price: '',
-        stock: '',
-        description: '',
-        category: ''
-      })
-      setEditingProduct(null)
-      setShowForm(false)
+    } else {
+      // EDITAR PRODUCTO
+      const json = await updateProduct(editingProduct, formData, token);
+
+      if (!json.success) {
+        alert(json.error);
+        return;
+      }
+
+      fetchingProducts();
+      setEditingProduct(null);
+      setShowForm(false);
+
       await generatePopup({
         textTitle: "Producto actualizado 🎉",
         textContent: `ID: ${json.data._id} ✅`,
         icon: "success",
         showCancelButton: false,
         btnConfirm: "Cerrar",
-      })
+      });
     }
-  }
+
+    // Reset form
+    setFormData({
+      name: '',
+      price: '',
+      stock: '',
+      description: '',
+      category: ''
+    });
+  };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
+  // Eliminar producto
   const handleDelete = async (id) => {
     const validateDelete = await generatePopup({
       textTitle: "Borrar producto",
-      textContent: "Está seguro que quieres borrar el producto",
+      textContent: "¿Estás seguro que quieres borrar el producto?",
       icon: "warning",
       showCancelButton: true,
       btnConfirm: "Borrar"
-    })
+    });
 
     if (validateDelete.isConfirmed) {
-      await deleteProduct(id)
+      await deleteProduct(id, token);
+      fetchingProducts();
     }
+  };
 
-    fetchingProducts()
-  }
-
+  // Editar producto
   const handleEdit = (product) => {
-    console.log("El product a editar es:", product)
-    setShowForm(true)
+    setShowForm(true);
     setFormData({
       name: product.name,
       price: product.price,
       stock: product.stock,
       description: product.description,
       category: product.category
-    })
-    setEditingProduct(product)
-  }
+    });
+    setEditingProduct(product);
+  };
+
+const applyFilters = () => {
+  let query = "?"
+
+  if (filters.name) query += `name=${filters.name}&`
+  if (filters.category) query += `category=${filters.category}&`
+  if (filters.minPrice) query += `minPrice=${filters.minPrice}&`
+  if (filters.maxPrice) query += `maxPrice=${filters.maxPrice}&`
+  if (filters.sort) query += `sort=${filters.sort}&`
+  if (filters.limit) query += `limit=${filters.limit}&`
+
+  fetchingProducts(query)
+}
+
+const applyPage = (page) => {
+  let query = `?page=${page}&`
+
+  if (filters.name) query += `name=${filters.name}&`
+  if (filters.category) query += `category=${filters.category}&`
+  if (filters.minPrice) query += `minPrice=${filters.minPrice}&`
+  if (filters.maxPrice) query += `maxPrice=${filters.maxPrice}&`
+  if (filters.sort) query += `sort=${filters.sort}&`
+  if (filters.limit) query += `limit=${filters.limit}&`
+
+  fetchingProducts(query)
+}
+
+const clearFilters = () => {
+  setFilters({
+    name: "",
+    category: "",
+    minPrice: "",
+    maxPrice: "",
+    sort: ""
+  })
+
+  fetchingProducts("?page=1")
+}
 
   useEffect(() => {
-    fetchingProducts()
-  }, [])
+  fetchingProducts("?page=1")
+}, [])
 
   return (
     <div className="home-container">
@@ -154,8 +208,16 @@ const Home = () => {
       <section className="home-banner">
         <h2>Discover Our Exclusive Products</h2>
         <p>High quality, affordable prices, and fast delivery.</p>
-        <h2>Usuario loguead: {user}</h2>
+        <h2>Usuario logueado: {user}</h2>
       </section>
+
+    <select onChange={(e) => setFilters({ ...filters, limit: e.target.value })}
+>
+  <option value="5">5 por página</option>
+  <option value="10">10 por página</option>
+  <option value="20">20 por página</option>
+  <option value="50">50 por página</option>
+</select>
 
       {/* Product Catalog */}
       <main id="catalog">
@@ -166,68 +228,60 @@ const Home = () => {
           </button>
         </div>
 
+        <div className="filters">
+  <input type="text" placeholder="Buscar por nombre" onChange={(e) => setFilters({ ...filters, name: e.target.value })}/>
+
+  <input type="text" placeholder="Categoría" onChange={(e) => setFilters({ ...filters, category: e.target.value })}/>
+
+  <input type="number" placeholder="Precio mínimo" onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}/>
+
+  <input type="number" placeholder="Precio máximo" onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}/>
+
+  <select onChange={(e) => setFilters({ ...filters, sort: e.target.value })}>
+    <option value="">Ordenar por...</option>
+    <option value="price_asc">Precio ↑</option>
+    <option value="price_desc">Precio ↓</option>
+    <option value="name_asc">Nombre A-Z</option>
+    <option value="name_desc">Nombre Z-A</option>
+    <option value="stock_asc">Stock ↑</option>
+    <option value="stock_desc">Stock ↓</option>
+  </select>
+
+  <button onClick={applyFilters}>Aplicar filtros</button>
+  <button onClick={clearFilters}>Limpiar filtros</button>
+
+</div>
+
         {/* Product Form */}
         {showForm && (
           <div className="form-overlay">
             <div className="product-form">
               <h2>{editingProduct ? 'Edit Product' : 'Add New Product'}</h2>
               <form onSubmit={handleSubmit}>
+                
                 <div className="form-group">
                   <label>Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Product name"
-                  />
+                  <input type="text" name="name"value={formData.name} onChange={handleChange} placeholder="Product name"/>
                 </div>
 
                 <div className="form-group">
                   <label>Price</label>
-                  <input
-                    type="number"
-                    name="price"
-                    value={formData.price}
-                    onChange={handleChange}
-                    min="0"
-                    step="0.01"
-                    placeholder="0.00"
-                  />
+                  <input type="number" name="price" value={formData.price} onChange={handleChange} min="0" step="0.01" placeholder="0.00"/>
                 </div>
 
                 <div className="form-group">
                   <label>Stock</label>
-                  <input
-                    type="number"
-                    name="stock"
-                    value={formData.stock}
-                    onChange={handleChange}
-                    min="0"
-                    placeholder="0"
-                  />
+                  <input type="number" name="stock" value={formData.stock} onChange={handleChange} min="0" placeholder="0"/>
                 </div>
 
                 <div className="form-group">
                   <label>Description</label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    rows="4"
-                    placeholder="Product description"
-                  />
+                  <textarea name="description" value={formData.description} onChange={handleChange} rows="4" placeholder="Product description"/>
                 </div>
 
                 <div className="form-group">
                   <label>Category</label>
-                  <input
-                    type="text"
-                    name="category"
-                    value={formData.category}
-                    onChange={handleChange}
-                    placeholder="Electronics, Clothing, etc."
-                  />
+                  <input type="text" name="category" value={formData.category} onChange={handleChange} placeholder="Electronics, Clothing, etc."/>
                 </div>
 
                 <div className="form-actions">
@@ -238,16 +292,18 @@ const Home = () => {
                     Cancel
                   </button>
                 </div>
+
               </form>
             </div>
           </div>
         )}
 
+        {/* Product List */}
         <div className="product-list">
           {products.length === 0 && <p className="no-products">No hay productos disponibles.</p>}
 
-          {products.map((product, index) => (
-            <div key={index} className="product-card">
+          {products.map((product) => (
+            <div key={product._id} className="product-card">
               <h2>{product.name}</h2>
               <p className="product-price">${product.price}</p>
               <p><strong>Stock:</strong> {product.stock}</p>
@@ -255,22 +311,35 @@ const Home = () => {
               <p className="product-category">{product.category}</p>
 
               <div className="product-actions">
-                <button
-                  className="btn-edit"
-                  onClick={() => handleEdit(product)}
-                >
+                <button className="btn-edit" onClick={() => handleEdit(product)}>
                   ✏️ Edit
                 </button>
-                <button
-                  className="btn-delete"
-                  onClick={() => handleDelete(product._id)}
-                >
+                <button className="btn-delete" onClick={() => handleDelete(product._id)}>
                   🗑️ Delete
                 </button>
               </div>
             </div>
           ))}
         </div>
+
+        {pagination && (
+  <div className="pagination">
+    <button
+      disabled={pagination.page === 1}
+      onClick={() => applyPage(pagination.page - 1)}>
+      ◀ Anterior
+    </button>
+
+    <span>Página {pagination.page} de {pagination.pages}</span>
+
+    <button
+      disabled={pagination.page === pagination.pages}
+      onClick={() => applyPage(pagination.page + 1)}>
+      Siguiente ▶
+    </button>
+  </div>
+)}
+
       </main>
 
       {/* Footer */}
@@ -281,4 +350,4 @@ const Home = () => {
   );
 };
 
-export { Home };
+export default Home;

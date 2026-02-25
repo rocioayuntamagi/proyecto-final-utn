@@ -12,14 +12,14 @@ export const getProducts = async (req: Request, res: Response) => {
     const limit = Number(req.query.limit) || 10
     const skip = (page - 1) * limit
 
-    // FILTROS
+    // FILTROS    
     const filters: any = { user: req.user._id }
 
-    if (minPrice) filters.price = { ...filters.price, $gte: Number(minPrice) }
-    if (maxPrice) filters.price = { ...filters.price, $lte: Number(maxPrice) }
-    if (category) filters.category = category
-    if (stockMin) filters.stock = { $gte: Number(stockMin) }
-    if (name) filters.name = { $regex: name, $options: "i" }
+    if (minPrice !== undefined && minPrice !== "") {filters.price = { ...filters.price, $gte: Number(minPrice) }}
+    if (maxPrice !== undefined && maxPrice !== "") {filters.price = { ...filters.price, $lte: Number(maxPrice) }}
+    if (category !== undefined && category !== "") {filters.category = category}
+    if (stockMin !== undefined && stockMin !== "") {filters.stock = { $gte: Number(stockMin) }}
+    if (name !== undefined && name !== "") {filters.name = { $regex: name, $options: "i" }}
 
     // CONSULTA
     const [products, total] = await Promise.all([
@@ -53,31 +53,31 @@ export const getProducts = async (req: Request, res: Response) => {
 
 export const getProductById = async (req: Request, res: Response) => {
   try {
-    const id = req.params.id as string
+    const id = req.params.id as string;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
         error: "ID incorrecto, ingresa un valor válido"
-      })
+      });
     }
 
     const product = await Product.findOne({
       _id: id,
       user: req.user._id
-    })
+    });
 
     if (!product) {
       return res.status(404).json({
         success: false,
         error: "No existe el producto"
-      })
+      });
     }
 
-    return res.json({ success: true, data: product })
+    return res.json({ success: true, data: product });
   } catch (error) {
-    const err = error as Error
-    return res.status(500).json({ success: false, error: err.message })
+    const err = error as Error;
+    return res.status(500).json({ success: false, error: err.message });
   }
 }
 

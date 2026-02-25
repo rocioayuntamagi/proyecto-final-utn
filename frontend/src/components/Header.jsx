@@ -3,8 +3,7 @@ import { useAuth } from "../context/AuthContext"
 
 const Header = () => {
 
-  const { authContextLogout, token } = useAuth()
-
+  const { authContextLogout, token, user } = useAuth()
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -15,19 +14,31 @@ const Header = () => {
   return (
     <header className="home-header">
       <h1>Welcome to Our Store</h1>
+
       <nav>
         <ul>
           <li><Link to="/">About Us</Link></li>
 
-          {!token && <li><Link to="/login">Login</Link></li>}
+          {!token && (
+            <li><Link to="/login">Login</Link></li>
+          )}
 
-          {token && <li><Link to="/catalog">Catalog</Link></li>}
+          {token && (
+            <>
+              <li><Link to="/catalog">Catalog</Link></li>
+              <li className="user-label">Hola, {user || "Usuario"}</li>
+            </>
+          )}
         </ul>
-        {
-          token && <button onClick={handleLogout}>Cerrar sesión</button>
-        }
+
+        {token && (
+          <button onClick={handleLogout}>
+            Cerrar sesión
+          </button>
+        )}
       </nav>
-    </header>)
+    </header>
+  )
 }
 
 export { Header }

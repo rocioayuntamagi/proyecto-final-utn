@@ -4,74 +4,88 @@ const AuthContext = createContext()
 
 const BASE_API = "http://localhost:50000/auth"
 
-
 const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState("Gabriel")
+  const [user, setUser] = useState(null)
   const [token, setToken] = useState(localStorage.getItem("token") || null)
 
+  // Mantener token al recargar la página
   useEffect(() => {
-  const storedToken = localStorage.getItem("token");
-  if (storedToken) setToken(storedToken);
-}, []);
+    const storedToken = localStorage.getItem("token")
+    if (storedToken) setToken(storedToken)
+  }, [])
 
-const authContextLogin = async (credentials) => {
-  try {
-    const res = await fetch(`${BASE_API}/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(credentials)
-    });
+  // LOGIN
+  const authContextLogin = async (credentials) => {
+    try {
+      const res = await fetch(`${BASE_API}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(credentials)
+      })
 
-    if (!res.ok) return false;
+      if (!res.ok) return false
 
-    const json = await res.json();
+      const json = await res.json()
 
-    // Guarda token en localStorage
-    localStorage.setItem("token", json.data);
+      // Guardar token
+      localStorage.setItem("token", json.data)
+      setToken(json.data)
 
-    // Actualiza estado para que React se entere
-    setToken(json.data);
+      // Si el backend devuelve usuario, guardarlo
+      if (json.user) setUser(json.user)
 
-    // Si tu backend devuelve usuario, guardalo
-    if (json.user) setUser(json.user);
+      return true
 
-    return true;
-
-  } catch (error) {
-    console.error("Error en login:", error);
-    return false;
+    } catch (error) {
+      console.error("Error en login:", error)
+      return false
+    }
   }
-};
 
+  // REGISTER
   const authContextRegister = async (userData) => {
-    const res = await fetch(`${BASE_API}/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(userData)
-    })
+    try {
+      const res = await fetch(`${BASE_API}/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(userData)
+      })
 
-    return res
+      return res
+    } catch (error) {
+      console.error("Error en register:", error)
+      return null
+    }
   }
 
+  // LOGOUT
   const authContextLogout = () => {
     localStorage.removeItem("token")
-    setToken("")
+    setToken(null)
+    setUser(null)
   }
 
   return (
-    <AuthContext.Provider value={{ token, user, setUser, authContextLogin, authContextRegister, authContextLogout }}>
+    <AuthContext.Provider
+      value={{
+        token,
+        user,
+        setUser,
+        authContextLogin,
+        authContextRegister,
+        authContextLogout
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )
 }
 
-// custom hook
-const useAuth = () => {
-  return useContext(AuthContext)
-}
+// Custom hook
+const useAuth = () => useContext(AuthContext)
 
 export { AuthProvider, useAuth }

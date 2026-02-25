@@ -23,11 +23,11 @@ declare global {
 
 // middleware
 serverHttp.use(cors({
-  origin: "*",
+  origin: "http://localhost:5173",
   methods: ["GET", "POST", "PATCH", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
 }))
-
 serverHttp.use(express.json())
 
 // http://localhost:50000/products
