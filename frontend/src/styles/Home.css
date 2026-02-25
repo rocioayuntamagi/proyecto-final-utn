@@ -1,3 +1,21 @@
+/* Logout button styles */
+.logout-btn {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+.logout-btn:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
 /* Modern Color Palette & Variables */
 :root {
   --primary-color: #6366f1;

@@ -6,6 +6,9 @@ info:
 http:
   method: GET
   url: http://localhost:50000/products
+  body:
+    type: json
+    data: ""
   auth: inherit
 
 settings:

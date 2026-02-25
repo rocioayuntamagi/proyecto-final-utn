@@ -79,7 +79,7 @@ const Register = () => {
         password: '',
         confirmPassword: ''
       });
-      navigate("/login")
+      navigate("/about")
     } else {
       setErrors(newErrors);
     }

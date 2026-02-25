@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
+
 import Home from "../pages/Home"
 import Login from "../pages/Login"
 import Register from "../pages/Register"
+import { About } from "../pages/About"
 import { ProtectedRoute } from "../components/ProtectedRoute"
 
 const RouterApp = () => {
@@ -9,8 +11,11 @@ const RouterApp = () => {
     <BrowserRouter>
       <Routes>
 
+
         {/* Página principal */}
         <Route path="/" element={<Home />} />
+        {/* About Us */}
+        <Route path="/about" element={<About />} />
 
         {/* Login y Register */}
         <Route path="/login" element={<Login />} />
