@@ -11,6 +11,8 @@ const Home = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [pagination, setPagination] = useState(null);
+  const [searchName, setSearchName] = useState("");
+  const [searchCategory, setSearchCategory] = useState("");
  const [formData, setFormData] = useState({
   name: '',
   price: '',
@@ -148,10 +150,23 @@ const Home = () => {
     setEditingProduct(product);
   };
 
+   const applyFilters = () => {
+    let query = "?";
+
+    if (searchName) query += `name=${searchName}&`;
+    if (searchCategory) query += `category=${searchCategory}&`;
+
+    fetchingProducts(query);
+   };
 
 const applyPage = (page) => {
-  fetchingProducts(`?page=${page}`)
-}
+  let query = `?page=${page}&`;
+
+  if (searchName) query += `name=${searchName}&`;
+  if (searchCategory) query += `category=${searchCategory}&`;
+
+  fetchingProducts(query);
+};
 
   useEffect(() => {
   fetchingProducts("?page=1")
@@ -177,6 +192,27 @@ const applyPage = (page) => {
           + Add New Product
         </button>
       </div>
+
+      {/* Filtros de búsqueda */}
+<div className="filters">
+  <input
+    type="text"
+    placeholder="Buscar por nombre..."
+    value={searchName}
+    onChange={(e) => setSearchName(e.target.value)}
+  />
+
+  <input
+    type="text"
+    placeholder="Categoría..."
+    value={searchCategory}
+    onChange={(e) => setSearchCategory(e.target.value)}
+  />
+
+  <button onClick={applyFilters}>
+    Buscar
+  </button>
+</div>
 
       {/* Product Form */}
       {showForm && (

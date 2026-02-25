@@ -1,3 +1,47 @@
+/* Filtros de búsqueda */
+.filters {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+  align-items: center;
+  background: rgba(255,255,255,0.85);
+  padding: 20px 24px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+.filters input[type="text"] {
+  padding: 12px 16px;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border 0.2s, box-shadow 0.2s;
+  background: #fff;
+  color: var(--text-primary);
+  min-width: 180px;
+}
+.filters input[type="text"]:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.12);
+  outline: none;
+}
+.filters button {
+  background: var(--bg-gradient);
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+.filters button:hover {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
 /* Logout button styles */
 .logout-btn {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);

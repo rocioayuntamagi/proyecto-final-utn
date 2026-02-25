@@ -1,6 +1,7 @@
 # 🛒 API de Productos – Proyecto Final UTN
 
-Este proyecto es una API RESTful desarrollada con **Node.js**, **Express**, **TypeScript** y **MongoDB**, que permite gestionar productos con autenticación de usuarios, validación con Zod, filtros avanzados, paginación y ordenamiento dinámico.
+Esta es una API RESTful desarrollada con **Node.js**, **Express**, **TypeScript** y **MongoDB**, que permite gestionar productos asociados a un usuario autenticado.  
+Incluye autenticación con JWT, validación con Zod, filtrado por query params y paginación.
 
 ---
 
@@ -23,11 +24,15 @@ Clonar el repositorio:
 
 ```bash
 git clone https://github.com/rocioayuntamagi/proyecto-final-utn
+```
 
 Instalar dependencias:
 
 ```bash
 npm install
+```
+
+---
 
 ## ⚙️ Variables de entorno
 
@@ -35,8 +40,8 @@ Crear un archivo `.env` en la raíz del proyecto con:
 
 ```
 PORT=50000
-MONGO_URI=
-JWT_SECRET=
+MONGO_URI=TU_CONEXION_A_MONGO
+JWT_SECRET=TU_SECRETO
 ```
 
 ---
@@ -48,6 +53,8 @@ Modo desarrollo:
 ```bash
 npm run dev
 ```
+
+---
 
 ## 🔐 Autenticación
 
@@ -75,17 +82,25 @@ Devuelve un token JWT.
 ### 🔸 Products (protegido por JWT)
 
 #### **GET /products**  
-Obtiene productos del usuario logueado.  
+Obtiene los productos del usuario logueado.
+
 Incluye:
 
-- filtros (`minPrice`, `maxPrice`, `category`, `stockMin`, `name`)
-- paginación (`page`, `limit`)
-- ordenamiento (`sort=price_asc`, `sort=name_desc`, etc.)
+- **Filtrado mínimo obligatorio**  
+  - `name` → filtra por coincidencia parcial  
+  - `category` → filtra por categoría exacta  
 
-Ejemplo:
+- **Paginación**  
+  - `page`  
+  - `limit`  
+
+Ejemplos:
 
 ```
-GET /products?page=1&limit=10&sort=price_desc
+GET /products?page=1
+GET /products?name=ropa
+GET /products?category=electro
+GET /products?page=2&name=heladera
 ```
 
 ---
@@ -106,7 +121,8 @@ Body ejemplo:
   "name": "Teclado",
   "price": 15000,
   "category": "Periféricos",
-  "stock": 10
+  "stock": 10,
+  "description": "Teclado mecánico retroiluminado"
 }
 ```
 
@@ -149,12 +165,14 @@ src/
 ## 📝 Notas
 
 - Todas las rutas de productos requieren token JWT.  
-- Los productos están asociados al usuario logueado.  
+- Cada producto está asociado al usuario que lo creó.  
 - La API está lista para integrarse con un frontend.  
+- Incluye filtrado mínimo obligatorio para cumplir la consigna del TP.  
 
 ---
 
 ## 👩‍💻 Autor
 
-Proyecto desarrollado como parte del **Trabajo Práctico Final – UTN**.
+Proyecto desarrollado por **Rocío Ayunta** como parte del **Trabajo Práctico Final – UTN**.
+
 
