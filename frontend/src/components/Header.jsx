@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext"
 
 const Header = () => {
 
-  const { authContextLogout, token, user } = useAuth()
+  const { authContextLogout, token, user  } = useAuth()
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -26,7 +26,7 @@ const Header = () => {
           {token && (
             <>
               <li><Link to="/catalog">Catalog</Link></li>
-              <li className="user-label">Hola, {user || "Usuario"}</li>
+              <li className="user-label">Hola, {typeof user === 'object' && user !== null ? (user.name || user.email || "Usuario") : (user || "Usuario")}</li>
             </>
           )}
         </ul>

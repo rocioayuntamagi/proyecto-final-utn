@@ -19,15 +19,6 @@ const Home = () => {
   category: ''
 })
 
-const [filters, setFilters] = useState({
-  name: "",
-  category: "",
-  minPrice: "",
-  maxPrice: "",
-  sort: "",
-  limit: 10
-});
-
   const { user, token } = useAuth();
   const navigate = useNavigate();
 
@@ -157,42 +148,9 @@ const [filters, setFilters] = useState({
     setEditingProduct(product);
   };
 
-const applyFilters = () => {
-  let query = "?"
-
-  if (filters.name) query += `name=${filters.name}&`
-  if (filters.category) query += `category=${filters.category}&`
-  if (filters.minPrice) query += `minPrice=${filters.minPrice}&`
-  if (filters.maxPrice) query += `maxPrice=${filters.maxPrice}&`
-  if (filters.sort) query += `sort=${filters.sort}&`
-  if (filters.limit) query += `limit=${filters.limit}&`
-
-  fetchingProducts(query)
-}
 
 const applyPage = (page) => {
-  let query = `?page=${page}&`
-
-  if (filters.name) query += `name=${filters.name}&`
-  if (filters.category) query += `category=${filters.category}&`
-  if (filters.minPrice) query += `minPrice=${filters.minPrice}&`
-  if (filters.maxPrice) query += `maxPrice=${filters.maxPrice}&`
-  if (filters.sort) query += `sort=${filters.sort}&`
-  if (filters.limit) query += `limit=${filters.limit}&`
-
-  fetchingProducts(query)
-}
-
-const clearFilters = () => {
-  setFilters({
-    name: "",
-    category: "",
-    minPrice: "",
-    maxPrice: "",
-    sort: ""
-  })
-
-  fetchingProducts("?page=1")
+  fetchingProducts(`?page=${page}`)
 }
 
   useEffect(() => {
@@ -200,154 +158,159 @@ const clearFilters = () => {
 }, [])
 
   return (
-    <div className="home-container">
-      {/* Header */}
-      <Header />
+  <div className="home-container">
+    {/* Header */}
+    <Header />
 
-      {/* Banner */}
-      <section className="home-banner">
-        <h2>Discover Our Exclusive Products</h2>
-        <p>High quality, affordable prices, and fast delivery.</p>
-        <h2>Usuario logueado: {user}</h2>
-      </section>
+    {/* Banner */}
+    <section className="home-banner">
+      <h2>Discover Our Exclusive Products</h2>
+      <p>High quality, affordable prices, and fast delivery.</p>
+      <h2>Usuario logueado: {user}</h2>
+    </section>
 
-    <select onChange={(e) => setFilters({ ...filters, limit: e.target.value })}
->
-  <option value="5">5 por página</option>
-  <option value="10">10 por página</option>
-  <option value="20">20 por página</option>
-  <option value="50">50 por página</option>
-</select>
+    {/* Product Catalog */}
+    <main id="catalog">
+      <div className="catalog-header">
+        <h1>Product Catalog</h1>
+        <button className="btn-add-product" onClick={handleToggleForm}>
+          + Add New Product
+        </button>
+      </div>
 
-      {/* Product Catalog */}
-      <main id="catalog">
-        <div className="catalog-header">
-          <h1>Product Catalog</h1>
-          <button className="btn-add-product" onClick={handleToggleForm}>
-            + Add New Product
-          </button>
-        </div>
+      {/* Product Form */}
+      {showForm && (
+        <div className="form-overlay">
+          <div className="product-form">
+            <h2>{editingProduct ? 'Edit Product' : 'Add New Product'}</h2>
+            <form onSubmit={handleSubmit}>
 
-        <div className="filters">
-  <input type="text" placeholder="Buscar por nombre" onChange={(e) => setFilters({ ...filters, name: e.target.value })}/>
+              <div className="form-group">
+                <label>Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Product name"
+                />
+              </div>
 
-  <input type="text" placeholder="Categoría" onChange={(e) => setFilters({ ...filters, category: e.target.value })}/>
+              <div className="form-group">
+                <label>Price</label>
+                <input
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                />
+              </div>
 
-  <input type="number" placeholder="Precio mínimo" onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}/>
+              <div className="form-group">
+                <label>Stock</label>
+                <input
+                  type="number"
+                  name="stock"
+                  value={formData.stock}
+                  onChange={handleChange}
+                  min="0"
+                  placeholder="0"
+                />
+              </div>
 
-  <input type="number" placeholder="Precio máximo" onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}/>
+              <div className="form-group">
+                <label>Description</label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  rows="4"
+                  placeholder="Product description"
+                />
+              </div>
 
-  <select onChange={(e) => setFilters({ ...filters, sort: e.target.value })}>
-    <option value="">Ordenar por...</option>
-    <option value="price_asc">Precio ↑</option>
-    <option value="price_desc">Precio ↓</option>
-    <option value="name_asc">Nombre A-Z</option>
-    <option value="name_desc">Nombre Z-A</option>
-    <option value="stock_asc">Stock ↑</option>
-    <option value="stock_desc">Stock ↓</option>
-  </select>
+              <div className="form-group">
+                <label>Category</label>
+                <input
+                  type="text"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  placeholder="Electronics, Clothing, etc."
+                />
+              </div>
 
-  <button onClick={applyFilters}>Aplicar filtros</button>
-  <button onClick={clearFilters}>Limpiar filtros</button>
-
-</div>
-
-        {/* Product Form */}
-        {showForm && (
-          <div className="form-overlay">
-            <div className="product-form">
-              <h2>{editingProduct ? 'Edit Product' : 'Add New Product'}</h2>
-              <form onSubmit={handleSubmit}>
-                
-                <div className="form-group">
-                  <label>Name</label>
-                  <input type="text" name="name"value={formData.name} onChange={handleChange} placeholder="Product name"/>
-                </div>
-
-                <div className="form-group">
-                  <label>Price</label>
-                  <input type="number" name="price" value={formData.price} onChange={handleChange} min="0" step="0.01" placeholder="0.00"/>
-                </div>
-
-                <div className="form-group">
-                  <label>Stock</label>
-                  <input type="number" name="stock" value={formData.stock} onChange={handleChange} min="0" placeholder="0"/>
-                </div>
-
-                <div className="form-group">
-                  <label>Description</label>
-                  <textarea name="description" value={formData.description} onChange={handleChange} rows="4" placeholder="Product description"/>
-                </div>
-
-                <div className="form-group">
-                  <label>Category</label>
-                  <input type="text" name="category" value={formData.category} onChange={handleChange} placeholder="Electronics, Clothing, etc."/>
-                </div>
-
-                <div className="form-actions">
-                  <button type="submit" className="btn-submit">
-                    {editingProduct ? 'Update Product' : 'Create Product'}
-                  </button>
-                  <button type="button" className="btn-cancel" onClick={handleToggleForm}>
-                    Cancel
-                  </button>
-                </div>
-
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* Product List */}
-        <div className="product-list">
-          {products.length === 0 && <p className="no-products">No hay productos disponibles.</p>}
-
-          {products.map((product) => (
-            <div key={product._id} className="product-card">
-              <h2>{product.name}</h2>
-              <p className="product-price">${product.price}</p>
-              <p><strong>Stock:</strong> {product.stock}</p>
-              <p><strong>Description:</strong> {product.description}</p>
-              <p className="product-category">{product.category}</p>
-
-              <div className="product-actions">
-                <button className="btn-edit" onClick={() => handleEdit(product)}>
-                  ✏️ Edit
+              <div className="form-actions">
+                <button type="submit" className="btn-submit">
+                  {editingProduct ? 'Update Product' : 'Create Product'}
                 </button>
-                <button className="btn-delete" onClick={() => handleDelete(product._id)}>
-                  🗑️ Delete
+                <button type="button" className="btn-cancel" onClick={handleToggleForm}>
+                  Cancel
                 </button>
               </div>
-            </div>
-          ))}
+
+            </form>
+          </div>
         </div>
+      )}
 
-        {pagination && (
-  <div className="pagination">
-    <button
-      disabled={pagination.page === 1}
-      onClick={() => applyPage(pagination.page - 1)}>
-      ◀ Anterior
-    </button>
+      {/* Product List */}
+      <div className="product-list">
+        {products.length === 0 && (
+          <p className="no-products">No hay productos disponibles.</p>
+        )}
 
-    <span>Página {pagination.page} de {pagination.pages}</span>
+        {products.map((product) => (
+          <div key={product._id} className="product-card">
+            <h2>{product.name}</h2>
+            <p className="product-price">${product.price}</p>
+            <p><strong>Stock:</strong> {product.stock}</p>
+            <p><strong>Description:</strong> {product.description}</p>
+            <p className="product-category">{product.category}</p>
 
-    <button
-      disabled={pagination.page === pagination.pages}
-      onClick={() => applyPage(pagination.page + 1)}>
-      Siguiente ▶
-    </button>
+            <div className="product-actions">
+              <button className="btn-edit" onClick={() => handleEdit(product)}>
+                ✏️ Edit
+              </button>
+              <button className="btn-delete" onClick={() => handleDelete(product._id)}>
+                🗑️ Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Pagination */}
+      {pagination && (
+        <div className="pagination">
+          <button
+            disabled={pagination.page === 1}
+            onClick={() => applyPage(pagination.page - 1)}
+          >
+            ◀ Anterior
+          </button>
+
+          <span>Página {pagination.page} de {pagination.pages}</span>
+
+          <button
+            disabled={pagination.page === pagination.pages}
+            onClick={() => applyPage(pagination.page + 1)}
+          >
+            Siguiente ▶
+          </button>
+        </div>
+      )}
+
+    </main>
+
+    {/* Footer */}
+    <footer className="home-footer">
+      <p>&copy; 2026 Our Store. All rights reserved.</p>
+    </footer>
   </div>
-)}
-
-      </main>
-
-      {/* Footer */}
-      <footer className="home-footer">
-        <p>&copy; 2026 Our Store. All rights reserved.</p>
-      </footer>
-    </div>
-  );
-};
+);}
 
 export default Home;
